@@ -10,7 +10,7 @@ import Foundation
 enum WebService {
   
   enum Endpoint: String {
-    case base = "https://localhost:8080"
+    case base = "http://localhost:8080"
     case listMovies = "/movie/list/"
   }
   
@@ -33,21 +33,16 @@ enum WebService {
     case failure(NetworkError, Data?)
   }
   
-  enum ContentType: String {
-    case json = "application/json"
-    case formUrl = "application/x-www-form-urlencoded"
-  }
-  
     private static func completeUrl(path: Endpoint, text: String?) -> URLRequest? {
     guard let url = URL(string: "\(Endpoint.base.rawValue)\(path.rawValue)\(text ?? "")") else { return nil }
+    print(url)
     
     return URLRequest(url: url)
   }
   
-  private static func call(path: Endpoint,
+  public static func call(path: Endpoint,
                            method: Method,
                            text: String?,
-                           contentType: ContentType,
                            data: Data?,
                            completion: @escaping (Result) -> Void) {
     
@@ -62,9 +57,12 @@ enum WebService {
        */
         
         urlRequest.httpMethod = method.rawValue
-        urlRequest.setValue("application/json", forHTTPHeaderField: "accept")
-        urlRequest.setValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
-        urlRequest.httpBody = data
+        //urlRequest.setValue("application/json", forHTTPHeaderField: "accept")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if data != nil {
+            urlRequest.httpBody = data
+        }
         
         let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
           // roda em background (Non-MainThread)

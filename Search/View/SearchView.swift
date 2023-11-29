@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SearchView: View {
-    @State var text: String
+    @ObservedObject var viewModel: SearchViewModel
     
     var body: some View {
         ZStack {
@@ -18,12 +18,12 @@ struct SearchView: View {
                     .scaledToFit()
                 
                 HStack {
-                    TextField("Buscar por filme", text: $text)
+                    TextField("Buscar por filme", text: $viewModel.search)
                         .foregroundColor(.white)
-                      .textFieldStyle(CustomTextFieldStyle())
+                        .textFieldStyle(CustomTextFieldStyle())
                     
                     Button(action: {
-                        Text("Clicado")
+                        viewModel.listMovies()
                     }, label: {
                          Text("Buscar")
                             .padding(.horizontal, 10)
@@ -32,16 +32,26 @@ struct SearchView: View {
                               RoundedRectangle(cornerRadius: 6)
                                 .stroke(Color.gray, lineWidth: 1)
                             )
-                    })
+                    }).disabled(viewModel.search.count < 2)
                 }.padding()
                 
                 Spacer()
                 
+                ScrollView(showsIndicators: true) {
+                    VStack {
+                        if case SearchUIState.fullList(let rows) = viewModel.uiState {
+                            LazyVStack {
+                              ForEach(rows, content: MovieView.init(viewModel:))
+                            }.padding(.horizontal, 10)
+                        }
+                    }
+                }.background(Color.black)
             }
+            
         }.background(Color.black)
     }
 }
 
 #Preview {
-    SearchView(text: "")
+    SearchView(viewModel: SearchViewModel(interactor: SearchInteractor()))
 }

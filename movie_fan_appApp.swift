@@ -11,7 +11,7 @@ import SwiftUI
 struct movie_fan_appApp: App {
     var body: some Scene {
         WindowGroup {
-            SearchView(text: "")
+            SearchView(viewModel: SearchViewModel(interactor: SearchInteractor()))
         }
     }
 }
