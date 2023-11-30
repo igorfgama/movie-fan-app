@@ -39,6 +39,9 @@ struct SearchView: View {
                 
                 ScrollView(showsIndicators: true) {
                     VStack {
+                        if case SearchUIState.loading = viewModel.uiState {
+                            ProgressView()
+                        }               
                         if case SearchUIState.fullList(let rows) = viewModel.uiState {
                             LazyVStack {
                               ForEach(rows, content: MovieView.init(viewModel:))

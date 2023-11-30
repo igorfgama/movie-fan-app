@@ -21,16 +21,6 @@ class SearchViewModel: ObservableObject {
     
     init(interactor: SearchInteractor) {
       self.interactor = interactor
-      
-    /*
-      cancellable = publisher.sink { value in
-        print("usuário criado! goToHome: \(value)")
-        
-        if value {
-          self.uiState = .goToHomeScreen
-        }
-      }
-     */
     }
     
     deinit {
@@ -39,12 +29,11 @@ class SearchViewModel: ObservableObject {
     }
     
     func listMovies() {
-      //self.uiState = .loading
+      self.uiState = .loading
       
       cancellableRequest = interactor.listMovie(text: search)
         .receive(on: DispatchQueue.main)
         .sink { completion in
-          // aqui acontece o ERRO ou FINISHED
           switch(completion) {
             case .failure(let appError):
               self.uiState = SearchUIState.error(appError.message)
@@ -55,25 +44,24 @@ class SearchViewModel: ObservableObject {
           
         } receiveValue: { success in
             self.uiState = .loading
-          // aqui acontece o SUCESSO
-            
-        var rows: [MovieViewModel] = []
-        var id: Int = 0
-            
-        success.forEach { response in
-            id = id + 1
-            rows.append(MovieViewModel(id: id,
-                                       actors: response.actors,
-                                       country: response.country,
-                                       director: response.director,
-                                       genre: response.genre,
-                                       imdbId: response.imdbId,
-                                       poster: response.poster,
-                                       title: response.title,
-                                       year: response.year))
-        }
-          
-        self.uiState = .fullList(rows)
+                
+            var rows: [MovieViewModel] = []
+            var id: Int = 0
+                
+            success.forEach { response in
+                id = id + 1
+                rows.append(MovieViewModel(id: id,
+                                           actors: response.actors,
+                                           country: response.country,
+                                           director: response.director,
+                                           genre: response.genre,
+                                           imdbId: response.imdbId,
+                                           poster: response.poster,
+                                           title: response.title,
+                                           year: response.year))
+            }
+              
+            self.uiState = .fullList(rows)
         }
       }
 }

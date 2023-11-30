@@ -14,13 +14,17 @@ struct MovieView: View {
         ZStack {
            
         HStack {
-            Image(viewModel.poster)
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: 90)
-                .padding(.horizontal, 8)
+            if viewModel.poster == "N/A" {
+                Image("sem-poster")
+                    .resizable()
+                    .frame(width: 81.3, height: 120.0, alignment: .center)
+            } else {
+                AsyncImage(url: URL(string: viewModel.poster)) { image in
+                    image.image?.resizable()
+                }
+                .frame(width: 81.3, height: 120.0, alignment: .center)
+            }
             
-            Spacer()
             
             VStack(alignment: .leading) {
                 Text("\(viewModel.title) (\(viewModel.year))")
@@ -31,13 +35,13 @@ struct MovieView: View {
                 
                 Text("País: \(viewModel.country)")
                 Spacer()
-            }.frame(maxWidth: 400)
+            }.frame(maxWidth: .infinity, maxHeight: 120)
                 .padding(.horizontal, 10)
                 .foregroundColor(.white)
+                .padding(.vertical, 10)
             
-        }.padding(.horizontal, 8)
-            
-        }
+            }.padding(.horizontal, 8)
+        }.background(Color.black)
     }
 }
 
@@ -48,7 +52,7 @@ struct MovieView: View {
                                        director: "Watchowskis",
                                        genre: "Drama",
                                        imdbId: "tt12345",
-                                        poster: "poster",
+                                        poster: "N/A",
                                         title: "The Matrix",
                                         year: "1999"))
 }
